@@ -1,3 +1,5 @@
+using ASP.NET.basic;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -12,15 +14,17 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-MyMiddleware myMiddleware = new MyMiddleware();
-app.Map("/mapping", myMiddleware.MyMapMiddleware);
+// app.Map("/mapping", MyMapMiddleware);
 // app.Use(async (context, next) => {
 //     await context.Response.WriteAsync("This is USE middleware speaking");
 //     await next();
 // });
-app.Map("/logging", myMiddleware.LoggingMiddleware);
-// app.Use(myMiddleware.MyUseMiddleware);
-// app.Run(myMiddleware.MyRunMiddleware);
+// app.Map("/logging", LoggingMiddleware);
+// app.Use(MyRunMiddleware);
+// app.Use(MyUseMiddleware);
+
+
+app.UseMiddleware<CustomMiddleware>(); //Sử dụng middleware bằng lệnh UseMiddleware<Tên class middleware>
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
@@ -34,29 +38,27 @@ app.MapControllerRoute(
 
 app.Run();
 
-class MyMiddleware{
-    public Task MyRunMiddleware(HttpContext context){
-        return context.Response.WriteAsync("This is run middleware speaking");
-    }
-    public Task MyMapMiddleware(HttpContext context){
-        return context.Response.WriteAsync("This is MAP middleware speaking");
-    }
-    public Task MyUseMiddleware(HttpContext context, Func<Task> next){
-        context.Response.WriteAsync("This is USE middleware speaking");
-        return next();
-    }
-    public Task LoggingMiddleware(HttpContext context){
-        var responses = new String[]{
-            "Scheme : " + context.Request.Scheme,
-            "Host : " + context.Request.Host.ToString(),
-            "Path : " + context.Request.Path,
-            "QueryString : " + context.Request.QueryString.ToString(),
-            "Body : " + context.Request.Body.ToString()
-        };
-        String responseString = "";
-        foreach(String response in responses){
-            responseString += "\n" + response + "\n";
-        }
-        return context.Response.WriteAsync(responseString);
-    }
-}
+// Task MyRunMiddleware(HttpContext context){
+//     return context.Response.WriteAsync("This is run middleware speaking");
+// }
+// Task MyMapMiddleware(HttpContext context){
+//     return context.Response.WriteAsync("This is MAP middleware speaking");
+// }
+// Task MyUseMiddleware(HttpContext context, Func<Task> next){
+//     context.Response.WriteAsync("This is USE middleware speaking");
+//     return next();
+// }
+// Task LoggingMiddleware(HttpContext context){
+//     var responses = new String[]{
+//         "Scheme : " + context.Request.Scheme,
+//         "Host : " + context.Request.Host.ToString(),
+//         "Path : " + context.Request.Path,
+//         "QueryString : " + context.Request.QueryString.ToString(),
+//         "Body : " + context.Request.Body.ToString()
+//     };
+//     String responseString = "";
+//     foreach(String response in responses){
+//         responseString += "\n" + response + "\n";
+//     }
+//     return context.Response.WriteAsync(responseString);
+// }
